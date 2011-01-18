@@ -12,12 +12,20 @@ $(document).ready(function() {
 });
 
 function parseXml(xml) {
+	var lastLat, lastLng = null;
+
 	$(xml).find("Placemark").each(function(){
-		var pm = $(this);
-		var p = pm.find("Point");
-		var c = p.find("coordinates");
-		var bits = c.text().split(",");
-		$("#Debug").append(bits[0]+" , "+bits[1] + "<br />");
+		var bits = $(this).find("Point").find("coordinates").text().split(",");
+		var thisLat = parseFloat(bits[0]);
+		var thisLng = parseFloat(bits[1]);
+		$("#Debug").append(thisLat+" , "+thisLng + "<br>");
+
+		if (lastLat && lastLng && thisLat && thisLng) {
+			
+		}
+
+		lastLat = thisLat;
+		lastLng = thisLng;
 	});
 }
 
