@@ -20,7 +20,6 @@ $(document).ready(function() {
 
 	map = new OpenLayers.Map("Map",options);
 	map.addLayer(new OpenLayers.Layer.OSM());
-	map.zoomToMaxExtent();
 
 	markers = new OpenLayers.Layer.Markers( "Markers" );
 	map.addLayer(markers);
@@ -32,6 +31,7 @@ var totalDist = 0.0;
 function parseXml(xml) {
 	var lastPoint = null;
 	var point;
+	var olPoint;
 
 	var size = new OpenLayers.Size(21,25);
 	var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
@@ -47,7 +47,7 @@ function parseXml(xml) {
 
 		point = new LatLon(thisLat, thisLng);
 
-		var olPoint = new OpenLayers.LonLat(thisLat,thisLng).transform(latLngProjection,map.getProjectionObject());
+		olPoint = new OpenLayers.LonLat(thisLat,thisLng).transform(latLngProjection,map.getProjectionObject());
 		markers.addMarker(new OpenLayers.Marker(olPoint,icon.clone()))
 
 		if (lastPoint) {			
@@ -59,6 +59,9 @@ function parseXml(xml) {
 		lastPoint = point;
 	});
 	$("#Distance").append(totalDist + "<br>");
+
+	map.setCenter(olPoint,12);
+	
 
 }
 
