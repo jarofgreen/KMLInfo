@@ -11,6 +11,8 @@ $(document).ready(function() {
 
 });
 
+var totalDist = 0.0;
+
 function parseXml(xml) {
 	var lastLat, lastLng = null;
 
@@ -21,12 +23,18 @@ function parseXml(xml) {
 		$("#Debug").append(thisLat+" , "+thisLng + "<br>");
 
 		if (lastLat && lastLng && thisLat && thisLng) {
-			
+			var p1 = new LatLon(thisLat, thisLng);
+			var p2 = new LatLon(lastLat, lastLng);
+			var dist = parseFloat(p1.distanceTo(p2));
+			totalDist = totalDist + dist;
+			$("#Debug").append(dist + "<br>");
 		}
 
 		lastLat = thisLat;
 		lastLng = thisLng;
 	});
+	$("#Distance").append(totalDist + "<br>");
+
 }
 
 
