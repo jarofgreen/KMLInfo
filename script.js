@@ -3,6 +3,12 @@
 var map;
 
 var markers;
+var latLngProjection;
+
+var markerIcon;
+
+
+var animationInterval = 1000;
 
 $(document).ready(function() {
 
@@ -18,6 +24,12 @@ $(document).ready(function() {
 	markers = new OpenLayers.Layer.Markers( "Markers" );
 	map.addLayer(markers);
 
+	latLngProjection = new OpenLayers.Projection("EPSG:4326");
+
+	var size = new OpenLayers.Size(21,25);
+	var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+	markerIcon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png',size,offset);
+
 });
 
 function go() {
@@ -30,17 +42,10 @@ function go() {
 }
 
 var totalDist = 0.0;
+var dataPoints = new Array();
+var dataPosition = 0;
 
 function parseXml(xml) {
-	var lastPoint = null;
-	var point;
-	var olPoint;
-
-	var size = new OpenLayers.Size(21,25);
-	var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-	var icon = new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png',size,offset);
-
-	var latLngProjection = new OpenLayers.Projection("EPSG:4326");
 
 	$(xml).find("Placemark").each(function(){
 		var bits = $(this).find("Point").find("coordinates").text().split(",");
@@ -48,24 +53,41 @@ function parseXml(xml) {
 		var thisLng = parseFloat(bits[1]);
 		$("#Debug").append(thisLat+" , "+thisLng + "<br>");
 
-		point = new LatLon(thisLat, thisLng);
+		dataPoints.push([thisLat,thisLng]);
 
-		olPoint = new OpenLayers.LonLat(thisLat,thisLng).transform(latLngProjection,map.getProjectionObject());
-		markers.addMarker(new OpenLayers.Marker(olPoint,icon.clone()))
-
-		if (lastPoint) {			
-			var dist = parseFloat(lastPoint.distanceTo(point));
-			totalDist = totalDist + dist;
-			$("#Debug").append(dist + "<br>");
-		}
-
-		lastPoint = point;
 	});
-	$("#Distance").append(totalDist + "<br>");
 
+	var olPoint = new OpenLayers.LonLat(dataPoints[0][0],dataPoints[1][1]).transform(latLngProjection,map.getProjectionObject());
 	map.setCenter(olPoint,12);
-	
 
+	setTimeout("showNextPoint()",animationInterval);
 }
 
+function showNextPoint() {
+
+	if (dataPosition >= dataPoints.length) {
+		return;
+	}
+
+	var thisLat = dataPoints[dataPosition][0];
+	var thisLng = dataPoints[dataPosition][1];
+
+	var olPoint = new OpenLayers.LonLat(thisLat,thisLng).transform(latLngProjection,map.getProjectionObject());
+	map.panTo(olPoint);
+
+	markers.addMarker(new OpenLayers.Marker(olPoint,markerIcon.clone()))
+
+	if (dataPosition > 0) {
+		var thisPoint = new LatLon(thisLat, thisLng);
+		var lastLat = dataPoints[dataPosition-1][0];
+		var lastLng = dataPoints[dataPosition-1][1];
+		var lastPoint = new LatLon(lastLat, lastLng);
+		totalDist += parseFloat(lastPoint.distanceTo(thisPoint));
+		$("#Distance").html(totalDist);
+	}
+
+	dataPosition += 1;
+	setTimeout("showNextPoint()",animationInterval);
+
+}
 
