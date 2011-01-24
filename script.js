@@ -85,8 +85,8 @@ function showNextPoint() {
 		var lastLng = dataPoints[dataPosition-1][1];
 		var lastPoint = new LatLon(lastLat, lastLng);
 		totalDistKM += parseFloat(lastPoint.distanceTo(thisPoint));
-		$("#DistanceKM").html(totalDistKM);
-		$("#DistanceMiles").html(totalDistKM * 0.621371192);
+		$("#DistanceKM").html(totalDistKM.toPrecisionFixed(3));
+		$("#DistanceMiles").html((totalDistKM * 0.621371192).toPrecisionFixed(3));
 
 	}
 
