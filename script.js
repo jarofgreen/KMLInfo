@@ -41,7 +41,7 @@ function go() {
 	  });
 }
 
-var totalDist = 0.0;
+var totalDistKM = 0.0;
 var dataPoints = new Array();
 var dataPosition = 0;
 
@@ -82,8 +82,10 @@ function showNextPoint() {
 		var lastLat = dataPoints[dataPosition-1][0];
 		var lastLng = dataPoints[dataPosition-1][1];
 		var lastPoint = new LatLon(lastLat, lastLng);
-		totalDist += parseFloat(lastPoint.distanceTo(thisPoint));
-		$("#Distance").html(totalDist);
+		totalDistKM += parseFloat(lastPoint.distanceTo(thisPoint));
+		$("#DistanceKM").html(totalDistKM);
+		$("#DistanceMiles").html(totalDistKM * 0.621371192);
+
 	}
 
 	dataPosition += 1;
