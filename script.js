@@ -39,6 +39,8 @@ function go() {
 	    dataType: "xml",
 	    success: parseXml
 	  });
+
+	$('#LoadDataForm').remove();
 }
 
 var totalDistKM = 0.0;
