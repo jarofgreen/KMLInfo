@@ -6,13 +6,6 @@ var markers;
 
 $(document).ready(function() {
 
-	$.ajax({
-	    type: "GET",
-	    url: "data.kml",
-	    dataType: "xml",
-	    success: parseXml
-	  });
-
 	var options = {
 		projection: new OpenLayers.Projection("EPSG:900913"),
 		displayProjection: new OpenLayers.Projection("EPSG:4326"),
@@ -20,11 +13,21 @@ $(document).ready(function() {
 
 	map = new OpenLayers.Map("Map",options);
 	map.addLayer(new OpenLayers.Layer.OSM());
+	map.zoomToMaxExtent();
 
 	markers = new OpenLayers.Layer.Markers( "Markers" );
 	map.addLayer(markers);
 
 });
+
+function go() {
+	$.ajax({
+	    type: "GET",
+	    url: $('#FileURL').val(),
+	    dataType: "xml",
+	    success: parseXml
+	  });
+}
 
 var totalDist = 0.0;
 
